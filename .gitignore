@@ -1,0 +1,24 @@
+# Environment variables
+.env
+.env.*
+
+# Config nhạy cảm
+application.yml
+application-dev.yml
+application-prod.yml
+
+# Key / secret
+*.key
+*.pem
+*.p12
+
+# Node
+node_modules/
+
+# Build files
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/

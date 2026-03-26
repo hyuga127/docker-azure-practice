@@ -1,11 +1,7 @@
 import axios from "axios";
 
-// In development: CRA proxy forwards /api to localhost:5000
-// In production (Docker): Nginx proxies /api to the backend container
-const API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
-
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 10000,
 });
@@ -19,7 +15,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Handle 401 responses globally — clear token and redirect to login
@@ -32,7 +28,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
