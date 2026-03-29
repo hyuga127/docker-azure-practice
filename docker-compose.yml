@@ -1,38 +1,38 @@
 version: "3.8"
 
 services:
-  db:
-    image: mariadb:10.11
-    container_name: school_db
-    restart: unless-stopped
-    # unless-stopped: if the container is stopped, it will be started again
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: school_db
-      MYSQL_USER: school_user
-      MYSQL_PASSWORD: school_password
-    ports:
-      - "3306:3306"
-    # Thiết lập thư mục lưu trữ dữ liệu
-    volumes:
-      # Lưu dữ liệu vào thư mục db_data
-      - db_data:/var/lib/mysql
-      # Thêm file init.sql để khởi tạo database
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    # Thêm healthcheck để kiểm tra trạng thái khởi tạo của database
-    healthcheck:
-      # Thêm healthcheck.sh để kiểm tra trạng thái khởi tạo của database
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
-      # Thời gian timeout để kiểm tra trạng thái khởi tạo của database
-      timeout: 5s
-      # Số lần retry để kiểm tra trạng thái khởi tạo của database
-      retries: 10
-      # Thời gian delay để kiểm tra trạng thái khởi tạo của database
-      start_period: 30s
-    networks:
-      # Thêm network school_network
-      - school_network
+  # db:
+  #   image: mariadb:10.11
+  #   container_name: school_db
+  #   restart: unless-stopped
+  #   # unless-stopped: if the container is stopped, it will be started again
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: school_db
+  #     MYSQL_USER: school_user
+  #     MYSQL_PASSWORD: school_password
+  #   ports:
+  #     - "3306:3306"
+  #   # Thiết lập thư mục lưu trữ dữ liệu
+  #   volumes:
+  #     # Lưu dữ liệu vào thư mục db_data
+  #     - db_data:/var/lib/mysql
+  #     # Thêm file init.sql để khởi tạo database
+  #     - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   # Thêm healthcheck để kiểm tra trạng thái khởi tạo của database
+  #   healthcheck:
+  #     # Thêm healthcheck.sh để kiểm tra trạng thái khởi tạo của database
+  #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+  #     interval: 10s
+  #     # Thời gian timeout để kiểm tra trạng thái khởi tạo của database
+  #     timeout: 5s
+  #     # Số lần retry để kiểm tra trạng thái khởi tạo của database
+  #     retries: 10
+  #     # Thời gian delay để kiểm tra trạng thái khởi tạo của database
+  #     start_period: 30s
+  #   networks:
+  #     # Thêm network school_network
+  #     - school_network
 
   backend:
     # Lệnh cho docker tự đóng gói mã nguồn thay vì tải image từ Docker Hub
@@ -50,27 +50,27 @@ services:
       # Thêm PORT: 5000 để cấu hình port của backend
       PORT: 5000
       # Thêm DB_HOST: db để cấu hình host của database
-      DB_HOST: db
+      DB_HOST: ${DB_HOST}
       # Thêm DB_PORT: Cực kỳ quan trọng. Backend sẽ tìm database thông qua tên dịch vụ là db
       # thay vì dùng địa chỉ IP.
-      DB_PORT: 3306
+      DB_PORT: ${DB_PORT}
       # Thêm DB_USER: school_user để cấu hình user của database
-      DB_USER: school_user
+      DB_USER: ${DB_USER}
       # Thêm DB_PASSWORD: school_password để cấu hình password của database
-      DB_PASSWORD: school_password
+      DB_PASSWORD: ${DB_PASSWORD}
       # Thêm DB_NAME: school_db để cấu hình name của database
-      DB_NAME: school_db
-      JWT_SECRET: super_secret_jwt_key_change_in_production_2024
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 7d
       NODE_ENV: production
     ports:
       - "5000:5000"
-    depends_on:
-      # Thêm depends_on: db để chờ database khởi tạo xong mới khởi động backend
-      db:
-        # Thêm condition: service_healthy để chờ database khởi tạo xong mới khởi động backend.
-        # Giúp tránh trường hợp Backend sập vì chưa khởi tạo database.
-        condition: service_healthy
+    # depends_on:
+    #   # Thêm depends_on: db để chờ database khởi tạo xong mới khởi động backend
+    #   db:
+    #     # Thêm condition: service_healthy để chờ database khởi tạo xong mới khởi động backend.
+    #     # Giúp tránh trường hợp Backend sập vì chưa khởi tạo database.
+    #     condition: service_healthy
     networks:
       - school_network
 
@@ -103,7 +103,7 @@ networks:
   school_network:
     driver: bridge
 
-volumes:
-  # Khai báo chính thức sự tồn tại của volume db_data
-  # để Docker tự động cấp phát dung lượng trên ổ cứng thực tế của server để lưu trữ dữ liệu.
-  db_data:
+# volumes:
+#   # Khai báo chính thức sự tồn tại của volume db_data
+#   # để Docker tự động cấp phát dung lượng trên ổ cứng thực tế của server để lưu trữ dữ liệu.
+#   db_data:
